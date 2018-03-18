@@ -26,7 +26,6 @@ public class FragmentSuper extends Fragment {
     protected String titleMessage;
     protected Database database;
 
-    protected final static String TITLE_KEYWORD = "TITLE";
     protected final static String DATA_ID = "DATA_ID";
 
     @Override
@@ -45,8 +44,6 @@ public class FragmentSuper extends Fragment {
     }
 
     protected void parseArguments() {
-        titleMessage = arguments.getString(TITLE_KEYWORD);
-        titleView.setText(titleMessage);
     }
 
     protected void setViewId(View view){

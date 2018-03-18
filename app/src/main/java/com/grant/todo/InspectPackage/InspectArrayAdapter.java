@@ -25,6 +25,8 @@ import java.util.Locale;
  * Created by Grant on 12/28/17.
  */
 
+//TODO: Maintain list of items within adapter
+
 public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
 
     private LayoutInflater mInflater;

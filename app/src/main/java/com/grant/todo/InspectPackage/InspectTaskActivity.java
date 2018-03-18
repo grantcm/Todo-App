@@ -23,11 +23,11 @@ import java.util.List;
 
 public class InspectTaskActivity extends AppCompatActivity implements OnItemClickedListener {
     private FragmentManager fragmentManager;
-    private final String INSPECT_TASK_FRAGMENT = "INSPECT";
     private String title;
     private Fragment currentVisible;
     private int Id;
 
+    public static final String INSPECT_TASK_FRAGMENT = "INSPECT";
     public static final String TITLE = "TITLE";
     public static final String ID = "TASK_UID";
 
@@ -42,7 +42,7 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         ListTaskFragment recipePreviewFragment = ListTaskFragment.newInstance(Id);
         currentVisible = recipePreviewFragment;
-        fragmentTransaction.add(R.id.main_container, recipePreviewFragment, "Inspect_fragment");
+        fragmentTransaction.add(R.id.main_container, recipePreviewFragment, INSPECT_TASK_FRAGMENT);
         fragmentTransaction.commit();
     }
 
@@ -73,13 +73,13 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
             super.onBackPressed();
             if (((TimerFragment) currentVisible).isFinished()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    currentVisible = fragmentManager.findFragmentByTag("Inspect_fragment");
+                    currentVisible = fragmentManager.findFragmentByTag(INSPECT_TASK_FRAGMENT);
                     ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
                     listTaskFragment.updateProgress(1);
                     listTaskFragment.updateData();
                 }
             } else {
-                currentVisible = fragmentManager.findFragmentByTag("Inspect_fragment");
+                currentVisible = fragmentManager.findFragmentByTag(INSPECT_TASK_FRAGMENT);
                 ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
                 listTaskFragment.updateData();
             }
@@ -97,7 +97,7 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
-                .addToBackStack("Inspect");
+                .addToBackStack(INSPECT_TASK_FRAGMENT);
         fragmentTransaction.replace(R.id.main_container, timerFragment);
         fragmentTransaction.commit();
         currentVisible = timerFragment;

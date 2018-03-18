@@ -39,6 +39,8 @@ public class TodoItemData {
     public TodoItemData(String title, long time) {
         this.title = title;
         this.time = time;
+        this.checked = false;
+        this.editClicked = false;
     }
 
     @Ignore

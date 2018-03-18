@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 //        database.addTaskToTodo(todoData[0], taskData);
 //        database.addTodoItemToTask(taskData[2], itemData);
 
-        TodoFragment todoFragment = TodoFragment.newInstance("Today", database.listAllTodoId());
+        TodoFragment todoFragment = TodoFragment.newInstance(database.listAllTodoId());
         fragmentTransaction.add(R.id.main_container, todoFragment);
         CURRENTLY_VISIBLE = todoFragment;
         fragmentTransaction.commit();

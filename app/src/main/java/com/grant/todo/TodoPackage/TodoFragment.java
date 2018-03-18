@@ -31,10 +31,9 @@ public class TodoFragment extends FragmentSuper {
     private List<TodoData> data;
     private int[] ids;
 
-    public static TodoFragment newInstance(String title, int[] ids) {
+    public static TodoFragment newInstance(int[] ids) {
         TodoFragment todoFragment = new TodoFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(TITLE_KEYWORD, title);
         bundle.putIntArray(DATA_ID, ids);
         todoFragment.setArguments(bundle);
         return todoFragment;
@@ -43,8 +42,10 @@ public class TodoFragment extends FragmentSuper {
     @Override
     protected void parseArguments() {
         super.parseArguments();
+        titleMessage = "Today";
         ids = getArguments().getIntArray(DATA_ID);
         data = database.getTodoForIds(ids);
+        titleView.setText(titleMessage);
         setupOvalListView();
     }
 
@@ -62,7 +63,7 @@ public class TodoFragment extends FragmentSuper {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TodoData todo = arrayAdapter.getItem(i);
-                TaskFragment taskFragment = TaskFragment.newInstance(todo.getTitle(), todo.getUid());
+                TaskFragment taskFragment = TaskFragment.newInstance(todo.getUid());
                 fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
                         .addToBackStack("Main");

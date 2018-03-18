@@ -38,7 +38,6 @@ public class ListTaskFragment extends Fragment {
     private String titleMessage;
     private ViewSwitcher titleViewSwitcher;
     private TextView title;
-    private TextView helpMessage;
     private EditText editTitle;
     private ListView tasks;
     private int uid;
@@ -86,7 +85,6 @@ public class ListTaskFragment extends Fragment {
         titleViewSwitcher = view.findViewById(R.id.title_view_switcher);
         title = titleViewSwitcher.findViewById(R.id.title);
         editTitle = titleViewSwitcher.findViewById(R.id.edit_recipe_title_box);
-        helpMessage = view.findViewById(R.id.steps_hint_box);
         title.setText(titleMessage);
         setupTitleOnLongClick();
         inspectArrayAdapter = new InspectArrayAdapter(this.getContext(),
@@ -117,6 +115,7 @@ public class ListTaskFragment extends Fragment {
             updateMainViewToEdit();
             return true;
         }
+        saveState();
         return false;
     }
 
@@ -134,15 +133,21 @@ public class ListTaskFragment extends Fragment {
         inspectArrayAdapter.addAll(taskList);
     }
 
+    public void saveState() {
+        TodoItemData[] itemData = new TodoItemData[taskList.size()];
+        database.updateTodoItem(taskList.toArray(itemData));
+        database.updateTask(data);
+    }
+
     @Override
     public void onResume(){
-        data = database.findTaskById(uid);
-        taskList = database.getTodoItemForTask(uid);
+        updateData();
         super.onResume();
     }
 
     @Override
     public void onPause(){
+        saveState();
         super.onPause();
     }
 
@@ -168,7 +173,7 @@ public class ListTaskFragment extends Fragment {
         tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TodoItemData item = taskList.get(position);
+                TodoItemData item = inspectArrayAdapter.getItem(position);
                 if(inEditView) {
                     if(lastEdited != null) {
                         lastEdited.setEditClicked(false);
@@ -185,7 +190,8 @@ public class ListTaskFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(inEditView) {
                     taskList.remove(position);
-                    inspectArrayAdapter.notifyDataSetChanged();
+                    inspectArrayAdapter.clear();
+                    inspectArrayAdapter.addAll(taskList);
                 }
                 return true;
             }
@@ -208,15 +214,6 @@ public class ListTaskFragment extends Fragment {
     private void updateProgressBar(int completed) {
         progress.setMax(taskList.size());
         progress.setProgress(completed);
-    }
-
-    /**
-     * Sets the help message to visible if the display list is empty
-     */
-    private void displayHelperMessage () {
-        if (inspectArrayAdapter.getCount() == 0) {
-            helpMessage.setVisibility(View.VISIBLE);
-        }
     }
 
     /**
@@ -245,9 +242,9 @@ public class ListTaskFragment extends Fragment {
             progress.setVisibility(View.VISIBLE);
             inEditView = false;
             title.setText(editTitle.getText().toString());
+            data.setTitle(title.getText().toString());
             titleViewSwitcher.setDisplayedChild(0);
-            displayHelperMessage();
-            updateProgressBar(0);
+            progress.setMax(taskList.size());
             for (TodoItemData r : taskList) {
                 r.setEditClicked(false);
             }
@@ -255,7 +252,6 @@ public class ListTaskFragment extends Fragment {
         } else {
             editTitle.setText(title.getText().toString());
             progress.setVisibility(View.GONE);
-            helpMessage.setVisibility(View.GONE);
             titleViewSwitcher.setDisplayedChild(1);
             addRowButton.setVisibility(View.VISIBLE);
             inEditView = true;
@@ -266,11 +262,14 @@ public class ListTaskFragment extends Fragment {
 
     public void addNewRow() {
         if (inEditView) {
-            TodoItemData newItem = new TodoItemData("New", 0);
+            TodoItemData newItem = new TodoItemData("New", 0, uid);
             if (lastEdited != null) {
                 lastEdited.setEditClicked(false);
             }
             lastEdited = newItem;
+            //TODO: Fix this
+            database.addTodoItem(newItem);
+            taskList.add(newItem);
             inspectArrayAdapter.add(newItem);
         }
     }

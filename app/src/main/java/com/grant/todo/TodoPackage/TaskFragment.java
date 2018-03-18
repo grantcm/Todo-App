@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.grant.todo.Data.TaskData;
+import com.grant.todo.Data.TodoData;
 import com.grant.todo.Data.TodoItemData;
 import com.grant.todo.InspectPackage.InspectTaskActivity;
 import com.grant.todo.R;
@@ -25,14 +26,12 @@ import static android.app.Activity.RESULT_OK;
 public class TaskFragment extends FragmentSuper {
     private TodoArrayAdapter<TaskData> arrayAdapter;
     private List<TaskData> data;
-    private int parentId;
+    private TodoData fragmentData;
+    private int uid;
 
-    private final static String TITLE_KEYWORD = "TITLE";
-
-    public static TaskFragment newInstance(String title, int ids) {
+    public static TaskFragment newInstance(int ids) {
         TaskFragment taskFragment = new TaskFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(TITLE_KEYWORD, title);
         bundle.putInt(DATA_ID, ids);
         taskFragment.setArguments(bundle);
         return taskFragment;
@@ -41,11 +40,16 @@ public class TaskFragment extends FragmentSuper {
     @Override
     protected void parseArguments() {
         super.parseArguments();
-        parentId = getArguments().getInt(DATA_ID);
-        data = database.getTaskForTodo(parentId);
+        uid = getArguments().getInt(DATA_ID);
+        data = database.getTaskForTodo(uid);
+        fragmentData = database.findTodoById(uid);
+        titleMessage = fragmentData.getTitle();
+        titleView.setText(titleMessage);
         setupProgressListView(R.layout.progress_row);
     }
 
+
+    //TODO: Rewrite this into the onResume method
     @Override
     public void onActivityResult(int requestCode, int responseCode, Intent data) {
         super.onActivityResult(requestCode,responseCode,data);
@@ -82,16 +86,5 @@ public class TaskFragment extends FragmentSuper {
         Intent intent = new Intent(this.getActivity(), InspectTaskActivity.class);
         intent.putExtra(InspectTaskActivity.ID, task.getUid());
         startActivity(intent);
-    }
-
-    public void updateData(String taskName, ArrayList<TodoItemData> update) {
-        for (TaskData task : data) {
-            if (task.getTitle().equals(taskName)) {
-                data.remove(task);
-                task.setSteps(update);
-                data.add(task);
-                break;
-            }
-        }
     }
 }
