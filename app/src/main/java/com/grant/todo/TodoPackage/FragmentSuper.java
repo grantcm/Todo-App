@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.grant.todo.Data.Database;
 import com.grant.todo.R;
 
 import java.util.ArrayList;
@@ -23,13 +24,15 @@ public class FragmentSuper extends Fragment {
     protected TextView titleView;
     protected TextView completedCount;
     protected String titleMessage;
+    protected Database database;
 
     protected final static String TITLE_KEYWORD = "TITLE";
-    protected final static String LIST_DATA_KEYWORD = "LIST DATA";
+    protected final static String DATA_ID = "DATA_ID";
 
     @Override
     public void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = new Database(this.getContext());
         arguments = getArguments();
     }
 

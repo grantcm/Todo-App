@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.grant.todo.Data.Database;
+import com.grant.todo.Data.TodoItemData;
 import com.grant.todo.R;
 import com.grant.todo.TodoPackage.TodoItem;
 
@@ -31,29 +33,46 @@ public class TimerFragment extends Fragment {
     private String message;
     private CountDownTimer countDownTimer;
     private Button button;
-    private TodoItem referenceObject;
     private View progressBar;
     private View unfinishedProgressBar;
     private RelativeLayout timerContainer;
+    private TodoItemData itemData;
+    private int itemId;
+    private Database database;
 
-    public final static String ITEM = "ITEM";
+    public final static String ITEM_ID = "ITEM_ID";
 
-    public static TimerFragment newInstance(TodoItem item) {
+    public static TimerFragment newInstance(int itemId) {
         TimerFragment timerFragment = new TimerFragment();
         Bundle arguments = new Bundle();
-        arguments.putParcelable(ITEM, item);
+        arguments.putInt(ITEM_ID, itemId);
         timerFragment.setArguments(arguments);
         return timerFragment;
     }
 
     @Override
+    public void onPause() {
+        itemData.setTime(remainingTime);
+        database.updateTodoItem(itemData);
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        itemData = database.findTodoItemById(itemId);
+        super.onResume();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = new Database(this.getContext());
         Bundle argument = getArguments();
-        referenceObject = argument.getParcelable(ITEM);
-        length = referenceObject.getTime();
+        itemId = argument.getInt(ITEM_ID);
+        itemData = database.findTodoItemById(itemId);
+        length = itemData.getTime();
         remainingTime = length;
-        message = referenceObject.getText();
+        message = itemData.getTitle();
     }
 
     @Override
@@ -110,8 +129,9 @@ public class TimerFragment extends Fragment {
                 clock.setText("Done");
                 clock.setTextSize(100);
                 finished = true;
+                itemData.setChecked(true);
                 button.setText("Return");
-                referenceObject.setChecked(true);
+                database.updateTodoItem(itemData);
             }
         };
 

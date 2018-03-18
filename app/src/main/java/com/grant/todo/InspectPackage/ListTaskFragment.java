@@ -19,11 +19,15 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
+import com.grant.todo.Data.Database;
+import com.grant.todo.Data.TaskData;
+import com.grant.todo.Data.TodoItemData;
 import com.grant.todo.R;
 import com.grant.todo.TodoPackage.TodoItem;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 /**
@@ -31,32 +35,33 @@ import java.util.Timer;
  */
 
 public class ListTaskFragment extends Fragment {
-    private static final String TITLE_KEYWORD = "TITLE";
     private String titleMessage;
     private ViewSwitcher titleViewSwitcher;
     private TextView title;
     private TextView helpMessage;
     private EditText editTitle;
     private ListView tasks;
-    private ArrayList<TodoItem> taskList;
+    private int uid;
+    private TaskData data;
+    private List<TodoItemData> taskList;
     private InspectArrayAdapter inspectArrayAdapter;
     private ProgressBar progress;
     private Button addRowButton;
-    private TodoItem lastEdited = null;
+    private TodoItemData lastEdited = null;
     private boolean inEditView = false;
     private OnItemClickedListener activityCallback;
+    private Database database;
 
-    public static final String INSTRUCTION = "INSTRUCTIONS";
+    public static final String DATA_ID = "DATA_ID";
 
     public ListTaskFragment() {
         taskList = new ArrayList<>();
     }
 
-    public static ListTaskFragment newInstance(String title, ArrayList<TodoItem> items) {
+    public static ListTaskFragment newInstance(int id) {
         ListTaskFragment newFragment = new ListTaskFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(TITLE_KEYWORD, title);
-        bundle.putParcelableArrayList(INSTRUCTION, items);
+        bundle.putInt(DATA_ID, id);
         newFragment.setArguments(bundle);
         return newFragment;
     }
@@ -64,9 +69,12 @@ public class ListTaskFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        database = new Database(this.getContext());
         Bundle arguments = getArguments();
-        titleMessage = arguments.getString(TITLE_KEYWORD);
-        taskList = arguments.getParcelableArrayList(INSTRUCTION);
+        uid = arguments.getInt(DATA_ID);
+        data = database.findTaskById(uid);
+        titleMessage = data.getTitle();
+        taskList = database.getTodoItemForTask(uid);
     }
 
     @Override
@@ -118,8 +126,18 @@ public class ListTaskFragment extends Fragment {
         activityCallback = (OnItemClickedListener) context;
     }
 
+    public void updateData(){
+        //TODO: Improve this
+        data = database.findTaskById(uid);
+        inspectArrayAdapter.clear();
+        taskList = database.getTodoItemForTask(uid);
+        inspectArrayAdapter.addAll(taskList);
+    }
+
     @Override
     public void onResume(){
+        data = database.findTaskById(uid);
+        taskList = database.getTodoItemForTask(uid);
         super.onResume();
     }
 
@@ -150,7 +168,7 @@ public class ListTaskFragment extends Fragment {
         tasks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TodoItem item = taskList.get(position);
+                TodoItemData item = taskList.get(position);
                 if(inEditView) {
                     if(lastEdited != null) {
                         lastEdited.setEditClicked(false);
@@ -176,7 +194,7 @@ public class ListTaskFragment extends Fragment {
 
     private int getCompletedCount(){
         int count = 0;
-        for (TodoItem todo: taskList) {
+        for (TodoItemData todo: taskList) {
             if(todo.isChecked())
                 count++;
         }
@@ -205,7 +223,7 @@ public class ListTaskFragment extends Fragment {
      * Launches new clock activity with parameters time and step
      * @param item is the data for the clicked list item
      */
-    public void launchClock(TodoItem item){
+    public void launchClock(TodoItemData item){
         activityCallback.onItemClicked(item);
     }
 
@@ -230,7 +248,7 @@ public class ListTaskFragment extends Fragment {
             titleViewSwitcher.setDisplayedChild(0);
             displayHelperMessage();
             updateProgressBar(0);
-            for (TodoItem r : taskList) {
+            for (TodoItemData r : taskList) {
                 r.setEditClicked(false);
             }
             inspectArrayAdapter.notifyDataSetChanged();
@@ -248,7 +266,7 @@ public class ListTaskFragment extends Fragment {
 
     public void addNewRow() {
         if (inEditView) {
-            TodoItem newItem = new TodoItem("New", 0);
+            TodoItemData newItem = new TodoItemData("New", 0);
             if (lastEdited != null) {
                 lastEdited.setEditClicked(false);
             }

@@ -1,5 +1,6 @@
 package com.grant.todo.TodoPackage;
 
+import android.arch.persistence.room.Ignore;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
@@ -8,10 +9,13 @@ import java.util.ArrayList;
  * Created by Grant on 3/12/18.
  */
 
-public abstract class ListObject<T> implements Parcelable {
+public abstract class ListObject<T> {
 
+    @Ignore
     public String title;
+    @Ignore
     protected ArrayList<T> steps;
+    @Ignore
     protected int completed = 0;
 
     public int incrementCompleted() {
@@ -25,7 +29,8 @@ public abstract class ListObject<T> implements Parcelable {
     public boolean isCompleted() { return false; }
 
     public float getFloatCompleted() {
-        return ((float) getCompleted()) / ((float) steps.size());
+        //return ((float) getCompleted()) / ((float) steps.size());
+        return 0;
     }
 
     public int getCompleted() {
@@ -33,7 +38,8 @@ public abstract class ListObject<T> implements Parcelable {
     }
 
     public int getStepsLeft() {
-        return steps.size() - getCompleted();
+        //return steps.size() - getCompleted();
+        return 0;
     }
 
     public int getStepsSize() {

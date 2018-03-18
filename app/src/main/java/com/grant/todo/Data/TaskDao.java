@@ -23,6 +23,9 @@ public interface TaskDao {
     @Update
     void update(TaskData... data);
 
+    @Query("SELECT * FROM taskdata WHERE uid=:id")
+    TaskData findById(int id);
+
     @Query(("SELECT * FROM taskdata WHERE todoId=:id"))
     List<TaskData> selectFromParentId(int id);
 

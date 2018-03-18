@@ -103,4 +103,9 @@ public class TodoItemData {
     public void setTaskId(int taskId) {
         this.taskId = taskId;
     }
+
+    public boolean requiresClock() {
+        return time != 0;
+    }
+
 }

@@ -9,10 +9,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.grant.todo.Data.Database;
+import com.grant.todo.Data.TodoItemData;
 import com.grant.todo.R;
 import com.grant.todo.TodoPackage.TodoItem;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Grant on 3/12/18.
@@ -23,10 +26,10 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
     private final String INSPECT_TASK_FRAGMENT = "INSPECT";
     private String title;
     private Fragment currentVisible;
-    private ArrayList<TodoItem> data;
+    private int Id;
 
     public static final String TITLE = "TITLE";
-    public static final String STEPS = "STEPS";
+    public static final String ID = "TASK_UID";
 
 
     @Override
@@ -37,7 +40,7 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ListTaskFragment recipePreviewFragment = ListTaskFragment.newInstance(title, data);
+        ListTaskFragment recipePreviewFragment = ListTaskFragment.newInstance(Id);
         currentVisible = recipePreviewFragment;
         fragmentTransaction.add(R.id.main_container, recipePreviewFragment, "Inspect_fragment");
         fragmentTransaction.commit();
@@ -46,7 +49,7 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
     private void parseIntent() {
         Intent intent = getIntent();
         title = intent.getStringExtra(TITLE);
-        data = intent.getParcelableArrayListExtra(STEPS);
+        Id = intent.getIntExtra(ID, 0);
     }
 
     @Override
@@ -64,18 +67,21 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
         if (currentVisible instanceof ListTaskFragment) {
             ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
             if (!listTaskFragment.handleBackPressed()) {
-                Intent intent = new Intent();
-                intent.putExtra(TITLE,title);
-                intent.putExtra(STEPS,data);
-                setResult(RESULT_OK, intent);
-                finish();
+                super.onBackPressed();
             }
         } else if (currentVisible instanceof TimerFragment){
             super.onBackPressed();
-            currentVisible = fragmentManager.findFragmentByTag("Inspect_fragment");
-            ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                listTaskFragment.updateProgress(1);
+            if (((TimerFragment) currentVisible).isFinished()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    currentVisible = fragmentManager.findFragmentByTag("Inspect_fragment");
+                    ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
+                    listTaskFragment.updateProgress(1);
+                    listTaskFragment.updateData();
+                }
+            } else {
+                currentVisible = fragmentManager.findFragmentByTag("Inspect_fragment");
+                ListTaskFragment listTaskFragment = (ListTaskFragment) currentVisible;
+                listTaskFragment.updateData();
             }
         } else {
             super.onBackPressed();
@@ -86,8 +92,8 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
      * Launches new clock activity with parameters time and step
      * @param item TodoItem clicked
      */
-    public void launchClock(TodoItem item){
-        TimerFragment timerFragment = TimerFragment.newInstance(item);
+    public void launchClock(TodoItemData item){
+        TimerFragment timerFragment = TimerFragment.newInstance(item.getUid());
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
@@ -104,7 +110,7 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
     }
 
     @Override
-    public void onItemClicked(TodoItem item) {
+    public void onItemClicked(TodoItemData item) {
         launchClock(item);
     }
 
@@ -121,7 +127,6 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
             timer.cancelCountdown();
         } else {
             this.onBackPressed();
-
         }
     }
 }

@@ -24,17 +24,6 @@ public class Task extends ListObject<TodoItem> {
         in.readTypedList(steps, TodoItem.CREATOR);
     }
 
-    public static final Creator<Task> CREATOR = new Creator<Task>() {
-        @Override
-        public Task createFromParcel(Parcel in) {
-            return new Task(in);
-        }
-
-        @Override
-        public Task[] newArray(int size) {
-            return new Task[size];
-        }
-    };
 
     @Override
     public boolean isCompleted(){
@@ -51,17 +40,6 @@ public class Task extends ListObject<TodoItem> {
         }
         this.completed = completed;
         return completed;
-    }
-
-    @Override
-    public int describeContents() {
-        return this.hashCode();
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(title);
-        parcel.writeTypedList(steps);
     }
 
     @Override

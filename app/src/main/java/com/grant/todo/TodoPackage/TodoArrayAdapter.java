@@ -43,7 +43,7 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
 
     public void add(@Nullable T object) {
         objects.add(object);
-        mTotal += object.getStepsSize();
+        //mTotal += object.getStepsSize();
     }
 
     public void add(Collection<T> collection){
@@ -54,7 +54,7 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
 
     public void remove(@Nullable Todo object) {
         objects.remove(object);
-        mTotal -= object.getStepsSize();
+        //mTotal -= object.getStepsSize();
     }
 
     @Override

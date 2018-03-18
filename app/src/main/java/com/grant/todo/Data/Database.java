@@ -7,22 +7,30 @@ import com.grant.todo.TodoPackage.Task;
 import com.grant.todo.TodoPackage.Todo;
 import com.grant.todo.TodoPackage.TodoItem;
 
+import java.util.List;
+
 /**
  * Created by Grant on 3/17/18.
  */
 
 public class Database {
-    private static TodoDatabase database;
     private static ItemDao itemDao;
     private static TaskDao taskDao;
     private static TodoDao todoDao;
 
     public Database(Context context) {
-        TodoDatabaseSingleton singleton = new TodoDatabaseSingleton(context);
-        database = singleton.getDatabase();
-        itemDao = database.itemDao();
-        taskDao = database.taskDao();
+        TodoDatabase database = TodoDatabase.getDatabase(context);
         todoDao = database.todoDao();
+        taskDao = database.taskDao();
+        itemDao = database.itemDao();
+    }
+
+    public int[] listAllTodoId() {
+        return todoDao.listAllTodoId();
+    }
+
+    public List<TodoData> listAllTodo() {
+        return todoDao.listAll();
     }
 
     public TodoItemData findTodoItemByName(String name) {
@@ -35,6 +43,42 @@ public class Database {
 
     public TodoData findTodoByName(String name) {
         return todoDao.findByTitle(name);
+    }
+
+    public List<TodoData> getTodoForIds(int[] ids) {
+        return todoDao.selectFromIds(ids);
+    }
+
+    public TodoItemData findTodoItemById(int id) {
+        return itemDao.findById(id);
+    }
+
+    public TaskData findTaskById(int id) {
+        return taskDao.findById(id);
+    }
+
+    public TodoData findTodoById(int id) {
+        return todoDao.findById(id);
+    }
+
+    public List<TodoItemData> getTodoItemForTask(int id) {
+        return itemDao.selectFromParentId(id);
+    }
+
+    public List<TaskData> getTaskForTodo(int id) {
+        return taskDao.selectFromParentId(id);
+    }
+
+    public void updateTodoItem(TodoItemData... items) {
+        itemDao.update(items);
+    }
+
+    public void updateTodo(TodoData... items) {
+        todoDao.update(items);
+    }
+
+    public void updateTask(TaskData... items) {
+        taskDao.update(items);
     }
 
     public void addTodo(TodoData... items) {

@@ -6,6 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.grant.todo.TodoPackage.ListObject;
 import com.grant.todo.TodoPackage.Todo;
 
 import java.util.Date;
@@ -17,7 +18,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
  */
 
 @Entity
-public class TodoData {
+public class TodoData extends ListObject<TaskData> {
     @PrimaryKey(autoGenerate = true)
     private int uid;
 
@@ -54,5 +55,13 @@ public class TodoData {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder();
+        output.append(String.valueOf(uid)).append(",")
+        .append(title);
+        return output.toString();
     }
 }

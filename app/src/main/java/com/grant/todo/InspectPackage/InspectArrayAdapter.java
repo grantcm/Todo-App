@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.grant.todo.Data.TodoItemData;
 import com.grant.todo.R;
 import com.grant.todo.TodoPackage.TodoItem;
 
@@ -24,13 +25,13 @@ import java.util.Locale;
  * Created by Grant on 12/28/17.
  */
 
-public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
+public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
 
     private LayoutInflater mInflater;
     private int mResource;
     private ListTaskFragment parentClass;
 
-    public InspectArrayAdapter(Context context, int resource, List<TodoItem> objects,
+    public InspectArrayAdapter(Context context, int resource, List<TodoItemData> objects,
                                ListTaskFragment parentClass) {
         super(context, R.layout.task_row, objects);
         mInflater = LayoutInflater.from(context);
@@ -48,7 +49,7 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
      */
     private View createViewFromResource(final LayoutInflater inflater, int position,
                                         View convertView, final ViewGroup parent, int resource) {
-        final TodoItem item = getItem(position);
+        final TodoItemData item = getItem(position);
 
         if (item.isEditClicked()) {
             //Item Edit Mode
@@ -59,12 +60,12 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
             final RadioButton timerButton = convertView.findViewById(R.id.timer_button);
             EditText timerText = convertView.findViewById(R.id.time_value);
 
-            editText.setText(item.getText());
+            editText.setText(item.getTitle());
             editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 @Override
                 public void onFocusChange(View v, boolean hasFocus) {
                     if (!hasFocus) {
-                        item.setText(editText.getText().toString());
+                        item.setTitle(editText.getText().toString());
                     }
                 }
             });
@@ -91,7 +92,7 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
                 //Hide the check if top view is in edit mode
                 check.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
-                text.setText(item.getText());
+                text.setText(item.getTitle());
             } else {
                 if(item.isChecked() && item.requiresClock()){
                     button.setVisibility(View.GONE);
@@ -125,7 +126,7 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
      * @param button
      * @param item
      */
-    private void setupTimerStartButton(final Button button, final TodoItem item) {
+    private void setupTimerStartButton(final Button button, final TodoItemData item) {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,7 +147,7 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
      * @param editTimerText
      * @param timerPrompt
      */
-    private void setupTimerRadioButton(final RadioButton radioButton, final TodoItem item,
+    private void setupTimerRadioButton(final RadioButton radioButton, final TodoItemData item,
                                        final EditText editTimerText, final TextView timerPrompt) {
         radioButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -184,7 +185,7 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
      * @param item     Recipe Item containing instruction and timer information
      * @return Initialized checkbox
      */
-    private void setupCheckBox(final CheckBox checkBox, final TodoItem item) {
+    private void setupCheckBox(final CheckBox checkBox, final TodoItemData item) {
         checkBox.setChecked(item.isChecked());
         checkBox.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -203,8 +204,8 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItem> {
     /**
      * Initializes the textview with the position and step of the item
      */
-    private void setupTextView(TextView textView, final TodoItem item, int position) {
-        String message = item.getText();
+    private void setupTextView(TextView textView, final TodoItemData item, int position) {
+        String message = item.getTitle();
         textView.setText(String.format(Locale.US, "%d. %s", position+1, message));
     }
 }

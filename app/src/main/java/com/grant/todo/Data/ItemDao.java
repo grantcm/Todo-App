@@ -23,6 +23,9 @@ public interface ItemDao {
     @Update
     void update(TodoItemData... data);
 
+    @Query("SELECT * FROM todoitemdata WHERE uid=:id")
+    TodoItemData findById(int id);
+
     @Query("SELECT * FROM todoitemdata WHERE taskId=:id")
     List<TodoItemData> selectFromParentId(int id);
 

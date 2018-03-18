@@ -25,9 +25,6 @@ public class MainActivity extends AppCompatActivity {
 
     private FragmentManager fragmentManager;
     private Fragment CURRENTLY_VISIBLE;
-    private ArrayList<Todo> testData = new ArrayList<>();
-    private ArrayList<Task> testTask = new ArrayList<>();
-    private ArrayList<TodoItem> testItem = new ArrayList<>();
     private static Database database;
 
     @Override
@@ -36,24 +33,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         setContentView(R.layout.activity_main);
-
-        testItem.add(new TodoItem("Start this",5));
-        testItem.add(new TodoItem("finish that", 0));
-        testItem.add(new TodoItem("done", 0));
-
-        testTask.add(new Task("Task 1", testItem));
-        testTask.add(new Task("Task 2", testItem));
-
-//        List<TodoData> data = new ArrayList<>();
-//        data.add(new TodoData(0, new Todo("Study", testTask)));
-//        data.add(new TodoData(1, new Todo("Cook", testTask)));
-//        data.add(new TodoData(1, new Todo("Clean", testTask)));
-
-        testData.add(new Todo("Study", testTask));
-        testData.add(new Todo("Cook", testTask));
-        testData.add(new Todo("Clean", testTask));
-
-
 
         database = new Database(this);
         TodoData[] todoData = {new TodoData("Study"),
@@ -66,12 +45,11 @@ public class MainActivity extends AppCompatActivity {
                 new TodoItemData("Finish that", 0),
                 new TodoItemData("Finally this", 20)};
 
-        database.addTodo(todoData);
-        database.addTaskToTodo(todoData[0], taskData);
-        database.addTodoItemToTask(taskData[0], itemData);
+//        database.addTodo(todoData);
+//        database.addTaskToTodo(todoData[0], taskData);
+//        database.addTodoItemToTask(taskData[2], itemData);
 
-        TodoFragment todoFragment = TodoFragment.newInstance("Today",testData);
-        //TodoFragment todoFragment = TodoFragment.newInstanceData("Today", data);
+        TodoFragment todoFragment = TodoFragment.newInstance("Today", database.listAllTodoId());
         fragmentTransaction.add(R.id.main_container, todoFragment);
         CURRENTLY_VISIBLE = todoFragment;
         fragmentTransaction.commit();

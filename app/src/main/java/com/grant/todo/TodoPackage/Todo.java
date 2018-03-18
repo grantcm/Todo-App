@@ -33,33 +33,4 @@ public class Todo extends ListObject<Task> {
         this.completed = completed;
         return completed;
     }
-
-    protected Todo(Parcel in) {
-        title = in.readString();
-        steps = new ArrayList<>();
-        in.readTypedList(steps, Task.CREATOR);
-    }
-
-    public static final Creator<Todo> CREATOR = new Creator<Todo>() {
-        @Override
-        public Todo createFromParcel(Parcel in) {
-            return new Todo(in);
-        }
-
-        @Override
-        public Todo[] newArray(int size) {
-            return new Todo[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return this.hashCode();
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(title);
-        parcel.writeTypedList(steps);
-    }
 }

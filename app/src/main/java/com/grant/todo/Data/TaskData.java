@@ -6,6 +6,9 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.grant.todo.TodoPackage.ListObject;
+
+
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
@@ -17,7 +20,7 @@ import static android.arch.persistence.room.ForeignKey.CASCADE;
                                             childColumns = "todoId",
                                             onDelete = CASCADE,
                                             onUpdate = CASCADE))
-public class TaskData {
+public class TaskData extends ListObject<TodoItemData> {
     @PrimaryKey(autoGenerate = true)
     private int uid;
 

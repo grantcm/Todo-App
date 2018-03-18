@@ -21,6 +21,12 @@ public interface TodoDao {
     @Query("SELECT * FROM tododata")
     List<TodoData> listAll();
 
+    @Query("SELECT uid FROM tododata")
+    int[] listAllTodoId();
+
+    @Query("SELECT * FROM tododata WHERE uid=:id")
+    TodoData findById(int id);
+
     @Query("SELECT * FROM tododata WHERE date IN(:dates)")
     List<TodoData> selectFromDates(Date[] dates);
 
