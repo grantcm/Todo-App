@@ -1,4 +1,4 @@
-package com.grant.todo.TodoPackage;
+package com.grant.todo.todo;
 
 /**
  * Created by Grant on 3/12/18.

@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -27,6 +27,9 @@ public class TodoItemData {
     @ColumnInfo(name = "time")
     private long time;
 
+    @ColumnInfo(name = "timeRemaining")
+    private long timeRemaining;
+
     @ColumnInfo(name = "checked")
     private boolean checked;
 
@@ -41,6 +44,7 @@ public class TodoItemData {
         this.time = time;
         this.checked = false;
         this.editClicked = false;
+        this.timeRemaining = time;
     }
 
     @Ignore
@@ -110,4 +114,11 @@ public class TodoItemData {
         return time != 0;
     }
 
+    public long getTimeRemaining() {
+        return timeRemaining;
+    }
+
+    public void setTimeRemaining(long timeRemaining) {
+        this.timeRemaining = timeRemaining;
+    }
 }

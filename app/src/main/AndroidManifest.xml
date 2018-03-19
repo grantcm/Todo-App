@@ -18,9 +18,14 @@
         </activity>
 
         <activity
-            android:name=".InspectPackage.InspectTaskActivity"
+            android:name=".inspect.InspectTaskActivity"
             android:windowSoftInputMode="adjustPan" >
         </activity>
+
+        <activity android:name=".todo.TaskActivity">
+
+        </activity>
+
     </application>
 
 </manifest>

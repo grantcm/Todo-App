@@ -1,4 +1,4 @@
-package com.grant.todo.InspectPackage;
+package com.grant.todo.inspect;
 
 import android.content.Intent;
 import android.os.Build;
@@ -9,13 +9,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.grant.todo.Data.Database;
-import com.grant.todo.Data.TodoItemData;
+import com.grant.todo.data.TodoItemData;
 import com.grant.todo.R;
-import com.grant.todo.TodoPackage.TodoItem;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Grant on 3/12/18.
@@ -40,9 +35,9 @@ public class InspectTaskActivity extends AppCompatActivity implements OnItemClic
 
         fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        ListTaskFragment recipePreviewFragment = ListTaskFragment.newInstance(Id);
-        currentVisible = recipePreviewFragment;
-        fragmentTransaction.add(R.id.main_container, recipePreviewFragment, INSPECT_TASK_FRAGMENT);
+        ListTaskFragment listTaskFragment = ListTaskFragment.newInstance(Id);
+        currentVisible = listTaskFragment;
+        fragmentTransaction.add(R.id.main_container, listTaskFragment, INSPECT_TASK_FRAGMENT);
         fragmentTransaction.commit();
     }
 

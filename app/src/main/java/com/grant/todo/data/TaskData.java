@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -6,7 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
-import com.grant.todo.TodoPackage.ListObject;
+import com.grant.todo.todo.ListObject;
 
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;

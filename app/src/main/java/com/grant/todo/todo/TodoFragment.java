@@ -1,23 +1,17 @@
-package com.grant.todo.TodoPackage;
+package com.grant.todo.todo;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.view.LayoutInflater;
+import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.grant.todo.Data.Database;
-import com.grant.todo.Data.TodoData;
+import com.grant.todo.data.TodoData;
 import com.grant.todo.R;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -26,27 +20,46 @@ import java.util.Locale;
  */
 
 public class TodoFragment extends FragmentSuper {
-    private FragmentManager fragmentManager;
+    private static FragmentManager fragmentManager;
     private TodoArrayAdapter<TodoData> arrayAdapter;
+    private String date;
     private List<TodoData> data;
-    private int[] ids;
+    private ViewPager viewPager;
 
-    public static TodoFragment newInstance(int[] ids) {
+    public final static String DATE = "DATE";
+
+    public static TodoFragment newInstance(String date, FragmentManager fragManager) {
         TodoFragment todoFragment = new TodoFragment();
+        fragmentManager = fragManager;
         Bundle bundle = new Bundle();
-        bundle.putIntArray(DATA_ID, ids);
+        bundle.putString(DATE, date);
         todoFragment.setArguments(bundle);
         return todoFragment;
     }
 
     @Override
+    protected void setViewId(View view){
+        super.setViewId(view);
+    }
+
+    @Override
     protected void parseArguments() {
         super.parseArguments();
-        titleMessage = "Today";
-        ids = getArguments().getIntArray(DATA_ID);
-        data = database.getTodoForIds(ids);
-        titleView.setText(titleMessage);
+        date = getArguments().getString(DATE);
+        data = database.selectDataFromDate(date);
+        data.addAll(database.selectDataFromDate(TodoData.EVERYDAY));
+        setTitleText();
         setupOvalListView();
+    }
+
+    public void setTitleText() {
+        if (date.equals(new SimpleDateFormat("E, MMMM dd").format(new Date()))) {
+            titleMessage = "Today".concat(" - ").concat(date);
+            titleView.setText(titleMessage);
+        } else {
+            titleMessage = date;
+            titleView.setText(titleMessage);
+        }
     }
 
     public void setCompletedCountText() {
@@ -63,12 +76,9 @@ public class TodoFragment extends FragmentSuper {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 TodoData todo = arrayAdapter.getItem(i);
-                TaskFragment taskFragment = TaskFragment.newInstance(todo.getUid());
-                fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction()
-                        .addToBackStack("Main");
-                fragmentTransaction.replace(R.id.main_container, taskFragment);
-                fragmentTransaction.commit();
+                Intent intent = new Intent(getContext(), TaskActivity.class);
+                intent.putExtra(TaskActivity.DATA_ID, todo.getUid());
+                startActivity(intent);
             }
         });
     }

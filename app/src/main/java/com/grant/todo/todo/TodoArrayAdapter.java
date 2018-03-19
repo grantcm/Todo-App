@@ -1,4 +1,4 @@
-package com.grant.todo.TodoPackage;
+package com.grant.todo.todo;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -15,6 +15,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.grant.todo.data.Database;
+import com.grant.todo.data.TaskData;
+import com.grant.todo.data.TodoData;
 import com.grant.todo.R;
 
 import java.util.ArrayList;
@@ -32,6 +35,7 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
     private int mTotal = 0;
     private Context mContext;
     private List<T> objects;
+    private Database database;
 
     public TodoArrayAdapter(@NonNull Context context, int resource) {
         super();
@@ -39,11 +43,11 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
         mContext = context;
         mInflater = LayoutInflater.from(context);
         mResource = resource;
+        database = new Database(context);
     }
 
     public void add(@Nullable T object) {
         objects.add(object);
-        //mTotal += object.getStepsSize();
     }
 
     public void add(Collection<T> collection){
@@ -52,9 +56,12 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
         }
     }
 
-    public void remove(@Nullable Todo object) {
+    public void clear() {
+        objects.clear();
+    }
+
+    public void remove(@Nullable T object) {
         objects.remove(object);
-        //mTotal -= object.getStepsSize();
     }
 
     @Override
@@ -87,24 +94,36 @@ public class TodoArrayAdapter<T extends ListObject> extends BaseAdapter {
             background.setAlpha(0x40);
             rowView.setBackground(background);
         } else {
-            float percent =  object.getFloatCompleted();
-            View finishedBar = rowView.findViewById(R.id.completed_percent);
-            View unfinishedBar = rowView.findViewById(R.id.unfinished_percent);
-            LinearLayout.LayoutParams bar1params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1-percent);
-            finishedBar.setLayoutParams(bar1params);
-            finishedBar.setBackgroundColor(0x8000FF00);
-            LinearLayout.LayoutParams bar2params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, percent);
-            unfinishedBar.setLayoutParams(bar2params);
-            unfinishedBar.setBackgroundColor(Color.RED);
+            if (object instanceof TaskData) {
+                TaskData data = (TaskData) object;
+                int completed = database.completedTodoItemCountForTaskId(data.getUid());
+                int count = database.todoItemCountForTaskId(data.getUid());
+                float percent =  (float) completed / (float) count;
+                View finishedBar = rowView.findViewById(R.id.completed_percent);
+                View unfinishedBar = rowView.findViewById(R.id.unfinished_percent);
+                LinearLayout.LayoutParams bar1params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1-percent);
+                finishedBar.setLayoutParams(bar1params);
+                finishedBar.setBackgroundColor(0x8000FF00);
+                LinearLayout.LayoutParams bar2params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, percent);
+                unfinishedBar.setLayoutParams(bar2params);
+                unfinishedBar.setBackgroundColor(Color.RED);
+            }
         }
 
 
         RelativeLayout contentView = rowView.findViewById(R.id.list_item_content_box);
         TextView textView = rowView.findViewById(R.id.content_text);
         TextView completionView = rowView.findViewById(R.id.completion_count);
-        completionView.setText(String.valueOf(object.getStepsLeft()));
+        if (object instanceof TaskData) {
+            completionView.setText(String.valueOf(database.uncompletedItemCount((TaskData) object)));
+        } else if (object instanceof TodoData) {
+            //TODO
+            completionView.setText(String.valueOf(database.uncompletedItemCount((TodoData) object)));
+        } else {
+            completionView.setText("0");
+        }
         textView.setText(object.getTitle());
         contentView.bringToFront();
 

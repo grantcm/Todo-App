@@ -1,4 +1,4 @@
-package com.grant.todo.InspectPackage;
+package com.grant.todo.inspect;
 
 import android.content.Context;
 import android.os.Build;
@@ -13,9 +13,8 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.grant.todo.Data.TodoItemData;
+import com.grant.todo.data.TodoItemData;
 import com.grant.todo.R;
-import com.grant.todo.TodoPackage.TodoItem;
 
 import java.util.List;
 import java.util.Locale;
@@ -63,14 +62,6 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
             EditText timerText = convertView.findViewById(R.id.time_value);
 
             editText.setText(item.getTitle());
-            editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                @Override
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (!hasFocus) {
-                        item.setTitle(editText.getText().toString());
-                    }
-                }
-            });
 
             setupTimerRadioButton(timerButton, item, timerText, timerPrompt);
 
@@ -82,8 +73,10 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
             }
         } else {
             //Normal Display
+            //TODO: Get text when edit mode is closed
             convertView = inflater.inflate(R.layout.task_row, parent, false);
             TextView text = convertView.findViewById(R.id.textView);
+            EditText editText = convertView.findViewById(R.id.edit_recipe_text);
             CheckBox check = convertView.findViewById(R.id.check_Box);
             Button button = convertView.findViewById(R.id.start_timer_button);
             setupCheckBox(check, item);
@@ -94,14 +87,13 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
                 //Hide the check if top view is in edit mode
                 check.setVisibility(View.GONE);
                 button.setVisibility(View.GONE);
-                text.setText(item.getTitle());
             } else {
                 if(item.isChecked() && item.requiresClock()){
                     button.setVisibility(View.GONE);
                     check.setVisibility(View.VISIBLE);
                 } else if (!item.isChecked() && item.requiresClock()) {
                     button.setVisibility(View.VISIBLE);
-                    long time = item.getTime();
+                    long time = item.getTimeRemaining();
                     String timeText = createTimeString(time);
                     button.setText(timeText);
                     check.setVisibility(View.GONE);
@@ -161,20 +153,6 @@ public class InspectArrayAdapter extends ArrayAdapter<TodoItemData> {
                     radioButton.setChecked(false);
                     editTimerText.setVisibility(View.GONE);
                     timerPrompt.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        editTimerText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(!hasFocus && radioButton.isChecked() && !editTimerText.getText().toString().isEmpty()) {
-                    //Convert from decimal to long
-                    String text = editTimerText.getText().toString();
-                    if (!text.startsWith("0")) {
-                        text = "0".concat(text);
-                    }
-                    item.setTime((long) (Double.parseDouble(text) * 60.0));
                 }
             }
         });

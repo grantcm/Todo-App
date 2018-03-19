@@ -1,4 +1,4 @@
-package com.grant.todo.TodoPackage;
+package com.grant.todo.todo;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,10 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.grant.todo.Data.Database;
+import com.grant.todo.data.Database;
 import com.grant.todo.R;
-
-import java.util.ArrayList;
 
 /**
  * Created by Grant on 3/13/18.

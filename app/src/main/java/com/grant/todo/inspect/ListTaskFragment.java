@@ -1,12 +1,10 @@
-package com.grant.todo.InspectPackage;
+package com.grant.todo.inspect;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,16 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
-import com.grant.todo.Data.Database;
-import com.grant.todo.Data.TaskData;
-import com.grant.todo.Data.TodoItemData;
+import com.grant.todo.data.Database;
+import com.grant.todo.data.TaskData;
+import com.grant.todo.data.TodoItemData;
 import com.grant.todo.R;
-import com.grant.todo.TodoPackage.TodoItem;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
 
 /**
  * Created by Grant on 3/12/18.
@@ -47,6 +42,7 @@ public class ListTaskFragment extends Fragment {
     private ProgressBar progress;
     private Button addRowButton;
     private TodoItemData lastEdited = null;
+    private int lastEditedPosition = -1;
     private boolean inEditView = false;
     private OnItemClickedListener activityCallback;
     private Database database;
@@ -109,6 +105,22 @@ public class ListTaskFragment extends Fragment {
             return true;
         } else if (inEditView && lastEdited.isEditClicked()) {
             lastEdited.setEditClicked(false);
+            if (lastEditedPosition != -1) {
+                View view = tasks.getChildAt(lastEditedPosition);
+                if (view!= null) {
+                    EditText editText = view.findViewById(R.id.edit_recipe_text);
+                    EditText timeText = view.findViewById(R.id.time_value);
+                    lastEdited.setTitle(editText.getText().toString());
+                    String text = timeText.getText().toString();
+                    if (!text.startsWith("0")) {
+                        text = "0".concat(text);
+                    }
+                    long time = (long) (Double.parseDouble(text) * 60.0);
+                    lastEdited.setTime(time);
+                    lastEdited.setTimeRemaining(time);
+                    database.updateTodoItem(lastEdited);
+                }
+            }
             inspectArrayAdapter.notifyDataSetChanged();
             return true;
         } else if (inEditView) {
@@ -179,6 +191,7 @@ public class ListTaskFragment extends Fragment {
                         lastEdited.setEditClicked(false);
                     }
                     lastEdited = item;
+                    lastEditedPosition = position;
                     item.setEditClicked(true);
                     inspectArrayAdapter.notifyDataSetChanged();
                 }
@@ -189,9 +202,11 @@ public class ListTaskFragment extends Fragment {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
                 if(inEditView) {
+                    database.deleteTodoItem(taskList.get(position));
                     taskList.remove(position);
                     inspectArrayAdapter.clear();
                     inspectArrayAdapter.addAll(taskList);
+                    inspectArrayAdapter.notifyDataSetChanged();
                 }
                 return true;
             }
@@ -263,10 +278,11 @@ public class ListTaskFragment extends Fragment {
     public void addNewRow() {
         if (inEditView) {
             TodoItemData newItem = new TodoItemData("New", 0, uid);
-            if (lastEdited != null) {
-                lastEdited.setEditClicked(false);
-            }
-            lastEdited = newItem;
+//            if (lastEdited != null) {
+//                lastEdited.setEditClicked(false);
+//            }
+//            lastEdited = newItem;
+//            lastEditedPosition = taskList.size();
             //TODO: Fix this
             database.addTodoItem(newItem);
             taskList.add(newItem);

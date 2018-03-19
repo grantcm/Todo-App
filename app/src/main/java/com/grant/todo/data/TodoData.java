@@ -1,17 +1,16 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
-import com.grant.todo.TodoPackage.ListObject;
-import com.grant.todo.TodoPackage.Todo;
+import com.grant.todo.todo.ListObject;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
-import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
  * Created by Grant on 3/16/18.
@@ -23,14 +22,25 @@ public class TodoData extends ListObject<TaskData> {
     private int uid;
 
     @ColumnInfo(name = "date")
-    private Date date;
+    private String date;
 
     @ColumnInfo(name = "title")
     private String title;
 
+    @Ignore
+    public static final String EVERYDAY="EVERYDAY";
+    @Ignore
+    public static final String DATE_FORMAT="E, MMMM dd";
+
     public TodoData(String title) {
         this.title = title;
-        date = new Date();
+        date = new SimpleDateFormat(DATE_FORMAT, Locale.US).format(new Date());
+    }
+
+    @Ignore
+    public TodoData(String title, String date) {
+        this.title = title;
+        this.date = date;
     }
 
     public int getUid() {
@@ -41,11 +51,11 @@ public class TodoData extends ListObject<TaskData> {
         this.uid = uid;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 

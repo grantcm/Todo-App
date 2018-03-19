@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;

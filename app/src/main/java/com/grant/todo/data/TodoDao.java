@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -6,9 +6,6 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.grant.todo.TodoPackage.Todo;
-
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,8 +24,14 @@ public interface TodoDao {
     @Query("SELECT * FROM tododata WHERE uid=:id")
     TodoData findById(int id);
 
+    @Query("SELECT uid FROM tododata WHERE date LIKE :date")
+    int[] selectIdsFromDate(String date);
+
+    @Query("SELECT * FROM tododata WHERE date LIKE :date")
+    List<TodoData> selectDataFromDate(String date);
+
     @Query("SELECT * FROM tododata WHERE date IN(:dates)")
-    List<TodoData> selectFromDates(Date[] dates);
+    List<TodoData> selectFromDates(String[] dates);
 
     @Query("SELECT * FROM tododata WHERE uid IN(:ids)")
     List<TodoData> selectFromIds(int[] ids);

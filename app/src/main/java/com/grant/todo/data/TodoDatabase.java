@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -10,7 +10,7 @@ import android.content.Context;
  * Created by Grant on 3/16/18.
  */
 
-@Database(entities = {TodoData.class, TaskData.class, TodoItemData.class}, version = 1)
+@Database(entities = {TodoData.class, TaskData.class, TodoItemData.class}, version = 3)
 @TypeConverters(DateConverter.class)
 
 public abstract class TodoDatabase extends RoomDatabase {
@@ -23,7 +23,10 @@ public abstract class TodoDatabase extends RoomDatabase {
     public static TodoDatabase getDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                    TodoDatabase.class, "todo-database").allowMainThreadQueries().build();
+                    TodoDatabase.class, "todo-database")
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
 
         return INSTANCE;

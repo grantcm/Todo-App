@@ -1,6 +1,5 @@
-package com.grant.todo.InspectPackage;
+package com.grant.todo.inspect;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v4.app.Fragment;
@@ -12,10 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.grant.todo.Data.Database;
-import com.grant.todo.Data.TodoItemData;
+import com.grant.todo.data.Database;
+import com.grant.todo.data.TodoItemData;
 import com.grant.todo.R;
-import com.grant.todo.TodoPackage.TodoItem;
 
 /**
  * Created by Grant on 3/13/18.
@@ -52,7 +50,7 @@ public class TimerFragment extends Fragment {
 
     @Override
     public void onPause() {
-        itemData.setTime(remainingTime);
+        itemData.setTimeRemaining(remainingTime);
         database.updateTodoItem(itemData);
         super.onPause();
     }
@@ -71,7 +69,7 @@ public class TimerFragment extends Fragment {
         itemId = argument.getInt(ITEM_ID);
         itemData = database.findTodoItemById(itemId);
         length = itemData.getTime();
-        remainingTime = length;
+        remainingTime = itemData.getTimeRemaining();
         message = itemData.getTitle();
     }
 
@@ -85,8 +83,14 @@ public class TimerFragment extends Fragment {
         unfinishedProgressBar = view.findViewById(R.id.progress_bar_unfinished);
         timerContainer = view.findViewById(R.id.timer_container);
         instructions.setText(message);
-        clock.setText(convertToMinuteTimer(length));
+        clock.setText(convertToMinuteTimer(remainingTime));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        database.updateTodoItem(itemData);
+        super.onDestroyView();
     }
 
     private String convertToMinuteTimer(long time) {
@@ -126,12 +130,16 @@ public class TimerFragment extends Fragment {
             }
 
             public void onFinish() {
+                LinearLayout.LayoutParams bar1params = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                progressBar.setLayoutParams(bar1params);
+                timerContainer.bringToFront();
                 clock.setText("Done");
                 clock.setTextSize(100);
                 finished = true;
                 itemData.setChecked(true);
                 button.setText("Return");
-                database.updateTodoItem(itemData);
             }
         };
 
@@ -142,6 +150,7 @@ public class TimerFragment extends Fragment {
         if (countDownTimer != null) {
             countDownTimer.cancel();
             button.setText("Start");
+            itemData.setTimeRemaining(remainingTime);
             started = false;
         }
     }

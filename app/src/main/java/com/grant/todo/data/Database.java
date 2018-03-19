@@ -1,11 +1,6 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.content.Context;
-import android.os.AsyncTask;
-
-import com.grant.todo.TodoPackage.Task;
-import com.grant.todo.TodoPackage.Todo;
-import com.grant.todo.TodoPackage.TodoItem;
 
 import java.util.List;
 
@@ -23,6 +18,30 @@ public class Database {
         todoDao = database.todoDao();
         taskDao = database.taskDao();
         itemDao = database.itemDao();
+    }
+
+    public int[] selectIdsFromDate(String date) {
+        return todoDao.selectIdsFromDate(date);
+    }
+
+    public List<TodoData> selectDataFromDate(String date) {
+        return todoDao.selectDataFromDate(date);
+    }
+
+    public int todoItemCountForTaskId(int id) {
+        return itemDao.countItemsForId(id);
+    }
+
+    public int completedTodoItemCountForTaskId(int id) {
+        return itemDao.countCompletedItemsForId(id);
+    }
+
+    public int uncompletedItemCount(TodoData data) {
+        return 0;
+    }
+
+    public int uncompletedItemCount(TaskData data) {
+        return itemDao.countUncompletedItemsForId(data.getUid());
     }
 
     public int[] listAllTodoId() {

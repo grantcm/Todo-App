@@ -1,4 +1,4 @@
-package com.grant.todo.Data;
+package com.grant.todo.data;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -22,6 +22,15 @@ public interface ItemDao {
 
     @Update
     void update(TodoItemData... data);
+
+    @Query("SELECT COUNT(*) FROM todoitemdata WHERE taskId=:id")
+    int countItemsForId(int id);
+
+    @Query("SELECT COUNT(*) FROM todoitemdata WHERE checked = 1 AND taskID=:id")
+    int countCompletedItemsForId(int id);
+
+    @Query("SELECT COUNT(*) FROM todoitemdata WHERE checked = 0 AND taskID=:id")
+    int countUncompletedItemsForId(int id);
 
     @Query("SELECT * FROM todoitemdata WHERE uid=:id")
     TodoItemData findById(int id);
